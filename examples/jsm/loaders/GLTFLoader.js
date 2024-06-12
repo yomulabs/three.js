@@ -69,10 +69,11 @@ import { toTrianglesDrawMode } from '../utils/BufferGeometryUtils.js';
 
 class GLTFLoader extends Loader {
 
-	constructor( manager ) {
+	constructor( manager, options = {} ) {
 
 		super( manager );
 
+		this.options = options;
 		this.dracoLoader = null;
 		this.ktx2Loader = null;
 		this.meshoptDecoder = null;
@@ -360,6 +361,7 @@ class GLTFLoader extends Loader {
 
 		const parser = new GLTFParser( json, {
 
+			useLegacyTextureLoader: this.options.useLegacyTextureLoader,
 			path: path || this.resourcePath || '',
 			crossOrigin: this.crossOrigin,
 			requestHeader: this.requestHeader,
@@ -2538,7 +2540,7 @@ class GLTFParser {
 
 		}
 
-		if ( typeof createImageBitmap === 'undefined' || isSafari || ( isFirefox && firefoxVersion < 98 ) ) {
+		if (this.options.useLegacyTextureLoader || typeof createImageBitmap === 'undefined' || isSafari || ( isFirefox && firefoxVersion < 98 ) ) {
 
 			this.textureLoader = new TextureLoader( this.options.manager );
 
